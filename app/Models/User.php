@@ -1,0 +1,56 @@
+<?php
+
+namespace App\Models;
+
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
+#[Fillable(['name', 'email', 'password', 'telefono_usuario', 'doc_identidad_usuario', 'nombres', 'apellidos'])]
+#[Hidden(['password', 'remember_token'])]
+class User extends Authenticatable
+{
+    /** @use HasFactory<UserFactory> */
+    use HasApiTokens,HasFactory, Notifiable;
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+        //relacion de administradores con usuarios
+    public function administrador()
+    {        return $this->hasOne(Administradore::class, 'users_id');
+    }   
+    public function jugador()
+    {
+        return $this->hasOne(Jugadore::class, 'users_id');
+    }
+
+    public function usuarios_club()
+    {
+        return $this->hasOne(UsuariosClub::class, 'users_id');
+    }
+
+    public function getTipoUsuario()
+    {
+        if ($this->administrador()->exists()) return 'admin';
+        if ($this->jugador()->exists()) return 'jugador';
+        if ($this->usuarios_club()->exists()) return 'club';
+
+        return null;
+    }
+}
