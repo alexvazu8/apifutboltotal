@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Club;
+use App\Models\Clube;
 use App\Models\User;
 use App\Models\UsuariosClub;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -28,7 +29,7 @@ class UserClubSeeder extends Seeder
             
         ]);
         //crear club y asignarle el usuario
-        $club = Club::create([
+        $club = Clube::create([
             'nombre_club' => 'Oriente Petrolero',
             'link_escudo' => 'localhost/escudoOriente.png',
             'ciudad_id' => 1,
