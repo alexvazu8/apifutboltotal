@@ -27,6 +27,6 @@ class AdminSeeder extends Seeder
             'apellidos' => 'Rodriguez',
             
         ]);
-        $user->administradores()->create(['users_id' => $user->id ]);
+        $user->administrador()->create(['users_id' => $user->id ]);
     }
 }
