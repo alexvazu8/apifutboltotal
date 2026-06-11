@@ -90,7 +90,7 @@ return [
      * ```
      */
     'servers' => [
-        'Local' => 'http://localhost/api',
+        'Local' => 'http://localhost:8000/api',
         'Production' => 'https://apifutboltotal-production.up.railway.app/api',
     ],
 
