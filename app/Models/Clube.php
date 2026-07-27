@@ -79,5 +79,21 @@ class Clube extends Model
     {
         return $this->hasMany(\App\Models\Prueba::class, 'id', 'clubes_id');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function pruebasCerradas()
+    {
+        return $this->hasMany(\App\Models\PruebaCerrada::class, 'clubes_id', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function seguimientos()
+    {
+        return $this->hasMany(\App\Models\SeguimientoClub::class, 'clubes_id', 'id');
+    }
     
 }

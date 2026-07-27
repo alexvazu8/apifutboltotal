@@ -6,6 +6,13 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        {{-- Favicon: uses public/favicon.ico when present, falls back to favicon.png --}}
+        @if (file_exists(public_path('favicon.ico')))
+            <link rel="icon" href="{{ asset('favicon.ico') }}">
+        @elseif (file_exists(public_path('favicon.png')))
+            <link rel="icon" href="{{ asset('favicon.png') }}">
+        @endif
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />

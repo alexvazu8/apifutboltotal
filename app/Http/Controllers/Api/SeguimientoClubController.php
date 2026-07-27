@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Prueba;
+use App\Models\SeguimientoClub;
 use Illuminate\Http\Request;
-use App\Http\Requests\PruebaRequest;
+use App\Http\Requests\SeguimientoClubRequest;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\PruebaResource;
+use App\Http\Resources\SeguimientoClubResource;
 
-class PruebaController extends Controller
+class SeguimientoClubController extends Controller
 {
     /**
      * Display a listing of the resource.
-     * Jugadores ven sus pruebas, Clubs ven sus pruebas, Admins ven todas
+     * Clubs ven solo sus seguimientos, admins ven todos
      */
     public function index(Request $request)
     {
@@ -22,29 +22,27 @@ class PruebaController extends Controller
         $userRole = $user->getTipoUsuario();
 
         if ($userRole === 'admin') {
-            $pruebas = Prueba::paginate();
-        } elseif ($userRole === 'jugador') {
-            $pruebas = Prueba::where('jugadores_id', $user->jugador->id)->paginate();
+            $items = SeguimientoClub::paginate();
         } elseif ($userRole === 'club') {
-            $pruebas = Prueba::where('clubes_id', $user->usuarios_club->clubes_id)->paginate();
+            $items = SeguimientoClub::where('clubes_id', $user->usuarios_club->clubes_id)->paginate();
         } else {
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
-        return PruebaResource::collection($pruebas);
+        return SeguimientoClubResource::collection($items);
     }
 
     /**
      * Store a newly created resource in storage.
-     * Solo admins y clubs pueden crear pruebas
+     * Solo clubs y admins
      */
-    public function store(PruebaRequest $request): JsonResponse
+    public function store(SeguimientoClubRequest $request): JsonResponse
     {
         $user = $request->user();
         $userRole = $user->getTipoUsuario();
 
-        if (!in_array($userRole, ['admin', 'club'])) {
-            return response()->json(['message' => 'Solo administradores y clubes pueden crear pruebas'], 403);
+        if ($userRole !== 'admin' && $userRole !== 'club') {
+            return response()->json(['message' => 'No autorizado'], 403);
         }
 
         // Si es club, asigna automáticamente su club
@@ -52,80 +50,58 @@ class PruebaController extends Controller
             $request->merge(['clubes_id' => $user->usuarios_club->clubes_id]);
         }
 
-        $prueba = Prueba::create($request->validated());
-
-        return response()->json(new PruebaResource($prueba), 201);
+        $item = SeguimientoClub::create($request->validated());
+        return response()->json(new SeguimientoClubResource($item), 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Prueba $prueba, Request $request): JsonResponse
+    public function show(SeguimientoClub $seguimientoClub, Request $request): JsonResponse
     {
         $user = $request->user();
         
-        if (!$this->canView($user, $prueba)) {
+        if (!$this->canView($user, $seguimientoClub)) {
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
-        return response()->json(new PruebaResource($prueba));
+        return response()->json(new SeguimientoClubResource($seguimientoClub));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(PruebaRequest $request, Prueba $prueba): JsonResponse
+    public function update(SeguimientoClubRequest $request, SeguimientoClub $seguimientoClub): JsonResponse
     {
         $user = $request->user();
         
-        if (!$this->canUpdate($user, $prueba)) {
+        if (!$this->canUpdate($user, $seguimientoClub)) {
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
-        $prueba->update($request->validated());
-
-        return response()->json(new PruebaResource($prueba));
+        $seguimientoClub->update($request->validated());
+        return response()->json(new SeguimientoClubResource($seguimientoClub));
     }
 
     /**
      * Delete the specified resource.
      */
-    public function destroy(Prueba $prueba, Request $request): Response
+    public function destroy(SeguimientoClub $seguimientoClub, Request $request): Response
     {
         $user = $request->user();
         
-        if (!$this->canDelete($user, $prueba)) {
+        if (!$this->canDelete($user, $seguimientoClub)) {
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
-        $prueba->delete();
-
+        $seguimientoClub->delete();
         return response()->noContent();
     }
 
     /**
      * Helpers
      */
-    private function canView($user, $prueba): bool
-    {
-        $userRole = $user->getTipoUsuario();
-
-        if ($userRole === 'admin') {
-            return true;
-        }
-
-        if ($userRole === 'jugador') {
-            return $user->jugador->id === $prueba->jugadores_id;
-        }
-
-        if ($userRole === 'club') {
-            return $user->usuarios_club->clubes_id === $prueba->clubes_id;
-        }
-
-        return false;
-    }
-
-    private function canUpdate($user, $prueba): bool
+    private function canView($user, $seguimientoClub): bool
     {
         $userRole = $user->getTipoUsuario();
 
@@ -134,14 +110,29 @@ class PruebaController extends Controller
         }
 
         if ($userRole === 'club') {
-            return $user->usuarios_club->clubes_id === $prueba->clubes_id;
+            return $user->usuarios_club->clubes_id === $seguimientoClub->clubes_id;
         }
 
         return false;
     }
 
-    private function canDelete($user, $prueba): bool
+    private function canUpdate($user, $seguimientoClub): bool
     {
-        return $this->canUpdate($user, $prueba);
+        $userRole = $user->getTipoUsuario();
+
+        if ($userRole === 'admin') {
+            return true;
+        }
+
+        if ($userRole === 'club') {
+            return $user->usuarios_club->clubes_id === $seguimientoClub->clubes_id;
+        }
+
+        return false;
+    }
+
+    private function canDelete($user, $seguimientoClub): bool
+    {
+        return $this->canUpdate($user, $seguimientoClub);
     }
 }

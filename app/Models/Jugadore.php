@@ -37,7 +37,7 @@ class Jugadore extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['pierna_habil', 'fecha_nacimiento', 'altura', 'peso', 'descripcion_jugador', 'users_id'];
+    protected $fillable = ['pierna_habil', 'fecha_nacimiento', 'altura', 'peso', 'descripcion_jugador', 'path_foto_jugador', 'users_id'];
 
 
     /**
@@ -70,6 +70,22 @@ class Jugadore extends Model
     public function videos()
     {
         return $this->hasMany(\App\Models\Video::class, 'id', 'jugadores_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function pruebasCerradas()
+    {
+        return $this->hasMany(\App\Models\PruebaCerrada::class, 'jugadores_id', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function seguimientoClubs()
+    {
+        return $this->hasMany(\App\Models\SeguimientoClub::class, 'jugadores_id', 'id');
     }
             
     

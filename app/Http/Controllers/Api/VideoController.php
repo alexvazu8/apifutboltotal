@@ -15,9 +15,13 @@ class VideoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, int $jugadores_id)
     {
-        $videos = Video::paginate();
+        $videos = Video::where('jugadores_id', $jugadores_id)->paginate();
+
+        if ($videos->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron videos para este jugador'], 404);
+        }
 
         return VideoResource::collection($videos);
     }

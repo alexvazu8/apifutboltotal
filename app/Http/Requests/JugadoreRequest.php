@@ -26,8 +26,9 @@ class JugadoreRequest extends FormRequest
 			'fecha_nacimiento' => 'required',
 			'altura' => 'required',
 			'peso' => 'required',
-			'descripcion_jugador' => 'required|string',
-			'users_id' => 'required',
+			'descripcion_jugador' => 'nullable|string|max:255',
+			'users_id' => $this->isMethod('post') ? 'required' : 'prohibited',
+			'path_foto_jugador' => 'prohibited',
         ];
     }
 }

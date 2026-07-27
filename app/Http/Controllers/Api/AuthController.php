@@ -92,6 +92,7 @@ class AuthController extends Controller
             'altura' => 'required|numeric|min:1|max:2.5',
             'peso' => 'required|numeric|min:30|max:200',
             'pierna_habil' => 'required|in:D,I',
+            'descripcion_jugador' => 'nullable|string|max:255',
         ]);
 
         // 🔹 2. Crear usuario
@@ -111,6 +112,7 @@ class AuthController extends Controller
             'altura' => $request->altura,
             'peso' => $request->peso,
             'pierna_habil' => $request->pierna_habil,
+            'descripcion_jugador' => $request->descripcion_jugador,
         ]);
 
         // 🔹 4. Token
@@ -129,6 +131,8 @@ class AuthController extends Controller
         return response()->json([
             'user' => $user,
             'jugador' => $jugador,
+            'tipo_usuario' => 'jugador',
+            'jugador_id' => $jugador->id,
             'access_token' => $token,
             'refresh_token' => $refreshToken
         ], 201);
@@ -169,6 +173,7 @@ class AuthController extends Controller
         return response()->json([
             'user' => $user,
             'tipo_usuario' => $tipo_usuario,
+            'jugador_id' => $tipo_usuario === 'jugador' ? $user->jugador?->id : null,
             'access_token' => $token,
             'refresh_token' => $refreshToken
         ], 200);
